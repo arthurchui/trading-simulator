@@ -5,9 +5,14 @@ require './position.rb'
 
 class Simulator
 
-  # TODO: 'stop loss %' should be CLI param
+  attr_reader :closed_positions, :stop_loss_coefficient
+
+  def initialize(stop_loss_coefficient)
+    @closed_positions = []
+    @stop_loss_coefficient = stop_loss_coefficient
+  end
+
   def call
-    closed_positions = []
     open_position = nil
     pricing_data.each do |day|
       current_date = day['Date']
@@ -18,10 +23,10 @@ class Simulator
           closed_positions << open_position
           open_position = nil
         else
-          # TODO: update stop loss
+          open_position.update_stop_loss_price(day['Close'].to_f * stop_loss_coefficient)
         end
       elsif buy_dates.any? { |buy_date| buy_date['date'] == current_date }
-        open_position = Position.new(current_date, day['Open'], day['Open'].to_f * 0.99)
+        open_position = Position.new(current_date, day['Open'], day['Open'].to_f * stop_loss_coefficient)
       end
     end
 
@@ -30,7 +35,7 @@ class Simulator
       closed_positions << open_position
     end
 
-    output_trade_history(closed_positions)
+    output_trade_history
   end
 
   def buy_dates
@@ -41,7 +46,7 @@ class Simulator
     @pricing_data ||= CSV.read('data/nflx_pricing_data.csv', headers: true)
   end
 
-  def output_trade_history(closed_positions)
+  def output_trade_history
     CSV.open('data/nflx_trade_history.csv', 'wb') do |csv|
       csv << %w[buy_date buy_price sell_date sell_price]
       closed_positions.each do |position|
@@ -53,4 +58,4 @@ class Simulator
 
 end
 
-Simulator.new.call
+Simulator.new(0.99).call
