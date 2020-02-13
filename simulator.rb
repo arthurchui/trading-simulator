@@ -7,17 +7,18 @@ class Simulator
 
   attr_reader :closed_positions, :stop_loss_coefficient
 
-  def initialize(stop_loss_coefficient)
+  def initialize(stock, stop_loss_coefficient)
     @closed_positions = []
     @stop_loss_coefficient = stop_loss_coefficient
+    @stock = stock
   end
 
-  def call
+  def call()
+    closed_positions = []
     open_position = nil
     pricing_data.each do |day|
       current_date = day['Date']
       if open_position
-        puts "#{day['Low']}, #{open_position.stop_loss_price}"
         if day['Low'].to_f < open_position.stop_loss_price
           open_position.close!(current_date)
           closed_positions << open_position
@@ -55,7 +56,4 @@ class Simulator
       end
     end
   end
-
 end
-
-Simulator.new(0.99).call
