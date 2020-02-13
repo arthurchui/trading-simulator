@@ -10,6 +10,7 @@ end
 
 group :test do
   gem "faker"
+  gem "fuubar"
   gem "mocha", "1.1.0", require: false
   gem "rspec"
   gem "rspec-its"
