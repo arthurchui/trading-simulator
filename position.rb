@@ -1,12 +1,15 @@
 class Position
 
-  attr_reader :open_date, :open_price, :close_date, :close_price
-  attr_accessor :stop_loss_price
+  attr_reader :open_date, :open_price, :close_date, :close_price, :stop_loss_price
 
   def initialize(open_date, open_price, stop_loss_price)
     @open_date = open_date
     @open_price = open_price
     @stop_loss_price = stop_loss_price
+  end
+
+  def sell?(current_price)
+    current_price < stop_loss_price
   end
 
   def close!(close_date, close_price = stop_loss_price)
@@ -18,7 +21,7 @@ class Position
     !close_date
   end
 
-  def update_stop_loss_price(new_stop_loss_price)
+  def stop_loss_price=(new_stop_loss_price)
     @stop_loss_price = [stop_loss_price, new_stop_loss_price].max
   end
 
