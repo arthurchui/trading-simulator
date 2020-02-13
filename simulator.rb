@@ -5,37 +5,54 @@ require './position.rb'
 
 class Simulator
 
+  attr_accessor :open_position
   attr_reader :closed_positions, :stop_loss_coefficient
 
   def initialize(stock, stop_loss_coefficient)
     @closed_positions = []
+    @open_position = nil
     @stop_loss_coefficient = stop_loss_coefficient
     @stock = stock
   end
 
-  def call()
-    open_position = nil
+  def call
+    should_buy = false
     pricing_data.each do |day|
       current_date = day['Date']
       if open_position
-        if day['Low'].to_f < open_position.stop_loss_price
-          open_position.close!(current_date)
-          closed_positions << open_position
-          open_position = nil
+        if open_position.sell?(day['Low'].to_f)
+          close_open_position(current_date)
         else
-          open_position.update_stop_loss_price(day['Close'].to_f * stop_loss_coefficient)
+          update_stop_loss_price(day['Close'].to_f)
         end
-      elsif buy_dates.any? { |buy_date| buy_date['date'] == current_date }
-        open_position = Position.new(current_date, day['Open'], day['Open'].to_f * stop_loss_coefficient)
+      elsif should_buy
+        open_position!(current_date, day['Open'].to_f)
       end
+      should_buy = buy_signal?(current_date)
     end
 
-    if open_position
-      open_position.close!(pricing_data[-1]['Date'], pricing_data[-1]['Close'])
-      closed_positions << open_position
-    end
-
+    close_open_position(pricing_data[-1]['Date'], pricing_data[-1]['Close']) if open_position
     output_trade_history
+  end
+
+  private
+
+  def update_stop_loss_price(current_close)
+    open_position.stop_loss_price = current_close * stop_loss_coefficient
+  end
+
+  def buy_signal?(current_date)
+    buy_dates.any? { |buy_date| buy_date['date'] == current_date }
+  end
+
+  def open_position!(current_date, open_price)
+    @open_position = Position.new(current_date, open_price, open_price * stop_loss_coefficient)
+  end
+
+  def close_open_position(close_date, close_price = open_position.stop_loss_price)
+    open_position.close!(close_date, close_price)
+    closed_positions << open_position
+    @open_position = nil
   end
 
   def buy_dates
@@ -56,5 +73,3 @@ class Simulator
     end
   end
 end
-
-Simulator.new(0.9).call
