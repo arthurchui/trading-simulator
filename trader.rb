@@ -15,7 +15,7 @@ class Trader < Thor
   option :stock, type: :string, required: true
   def simulate
     puts "Simulating ..."
-    stop_loss = options[:from] || 0.9
+    stop_loss = options[:stop_loss] || 0.9
     Simulator.new(options[:stock], stop_loss).call
   end
 end
