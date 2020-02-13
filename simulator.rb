@@ -14,7 +14,6 @@ class Simulator
   end
 
   def call()
-    closed_positions = []
     open_position = nil
     pricing_data.each do |day|
       current_date = day['Date']
