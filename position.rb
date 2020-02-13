@@ -18,6 +18,10 @@ class Position
     !close_date
   end
 
+  def update_stop_loss_price(new_stop_loss_price)
+    @stop_loss_price = [stop_loss_price, new_stop_loss_price].max
+  end
+
   def to_s
     "#{open_date}, #{open_price}, #{close_date}, #{close_price}"
   end
