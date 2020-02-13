@@ -43,7 +43,7 @@ class Simulator
   end
 
   def pricing_data
-    @pricing_data ||= CSV.read('data/nflx_pricing_data.csv', headers: true)
+    @pricing_data ||= CSV.read('data/NFLX.csv', headers: true)
   end
 
   def output_trade_history
@@ -56,3 +56,5 @@ class Simulator
     end
   end
 end
+
+Simulator.new(0.9).call
