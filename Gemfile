@@ -1,6 +1,7 @@
 source "https://rubygems.org/"
 
 gem "thor"
+gem "yquotes"
 
 group :development, :test do
   gem "byebug"
