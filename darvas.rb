@@ -3,8 +3,8 @@ require 'pry'
 class Darvas
   attr_reader :stock_csv
   SPIKE_PERCENTAGE = 10
-  OBSERVATION_PERIOD = 30
-  BREAKOUT_PERCENTAGE = 1.1
+  OBSERVATION_PERIOD = 90
+  BREAKOUT_PERCENTAGE = 1.15
 
   def initialize(stock_csv, start_date: Date.parse("2010-01-01"))
     @stock_csv = stock_csv.select do |row|

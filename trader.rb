@@ -18,6 +18,9 @@ class Trader < Thor
   desc 'simulate', 'simulate trades with the historical data'
   option :stop_loss, type: :numeric, desc: 'expressed as a ratio (e.g. 0.9 -> sell at 90% the value)'
   def simulate
+    FileUtils.rm_rf('simulated')
+    FileUtils.mkdir_p('simulated')
+
     puts 'Simulating ...'
     stop_loss = options[:stop_loss] || 0.9
     BulkSimulator.new(stop_loss).call
