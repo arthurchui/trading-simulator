@@ -36,9 +36,14 @@ describe Darvas do
   end
 
   describe '#monitor' do
-    context 'when the is a breakout' do
+    context 'when there is a breakout' do
       it "returns the date" do
         expect(subject.monitor(1.02, 8, 547.200012, 510.500000)).to eq "2020-01-22"
+      end
+    end
+    context 'when there isn\'t a breakout' do
+      it "returns nil" do
+        expect(subject.monitor(5, 8, 547.200012, 510.500000)).to eq nil
       end
     end
   end
