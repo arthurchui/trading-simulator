@@ -1,4 +1,11 @@
 class Report
+
+  attr_reader :position_size
+
+  def initialize(position_size)
+    @position_size = position_size
+  end
+
   def call
     CSV.open('report/all.csv', 'wb') do |csv|
       csv << %w[stock positions_count profit_loss]
@@ -20,7 +27,9 @@ class Report
 
   def calculate_profit_loss(positions)
     position_profit_loss = positions.map do |position|
-      position['sell_price'].to_f - position['buy_price'].to_f
+      share_count = position_size / position['buy_price'].to_f
+      profit_loss_per_share = position['sell_price'].to_f - position['buy_price'].to_f
+      share_count * profit_loss_per_share
     end
     position_profit_loss.sum
   end

@@ -56,9 +56,11 @@ class Trader < Thor
   end
 
   desc 'report', 'roll-up simulated transactions into total summaries'
+  option :position_size, type: :numeric, desc: 'position size (in dollars)'
   def report
     puts 'Generating ...'
-    Report.new.call
+    position_size = options[:position_size] || 1000
+    Report.new(position_size).call
   end
 end
 
