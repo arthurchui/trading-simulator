@@ -1,18 +1,13 @@
-#!/usr/bin/env ruby
-
-require 'csv'
-require './position.rb'
-
 class Simulator
 
   attr_accessor :open_position
-  attr_reader :closed_positions, :stop_loss_coefficient
+  attr_reader :closed_positions, :stock_symbol, :stop_loss_coefficient
 
-  def initialize(stock, stop_loss_coefficient)
+  def initialize(stock_symbol, stop_loss_coefficient)
     @closed_positions = []
     @open_position = nil
     @stop_loss_coefficient = stop_loss_coefficient
-    @stock = stock
+    @stock_symbol = stock_symbol
   end
 
   def call
@@ -42,7 +37,7 @@ class Simulator
   end
 
   def buy_signal?(current_date)
-    buy_dates.any? { |buy_date| buy_date['date'] == current_date }
+    buy_dates.any? { |buy_date| buy_date[0] == current_date }
   end
 
   def open_position!(current_date, open_price)
@@ -56,15 +51,15 @@ class Simulator
   end
 
   def buy_dates
-    @buy_dates ||= CSV.read('data/nflx_buy_dates.csv', headers: true)
+    @buy_dates ||= CSV.read("darvas/#{stock_symbol}.csv", headers: true)
   end
 
   def pricing_data
-    @pricing_data ||= CSV.read('data/NFLX.csv', headers: true)
+    @pricing_data ||= CSV.read("imported/#{stock_symbol}.csv", headers: true)
   end
 
   def output_trade_history
-    CSV.open('data/nflx_trade_history.csv', 'wb') do |csv|
+    CSV.open("simulated/#{stock_symbol}.csv", 'wb') do |csv|
       csv << %w[buy_date buy_price sell_date sell_price]
       closed_positions.each do |position|
         csv << [position.open_date, position.open_price, position.close_date,
