@@ -2,9 +2,9 @@ require "csv"
 require 'pry'
 class Darvas
   attr_reader :stock_csv
-  SPIKE_PERCENTAGE = 2
-  OBSERVATION_PERIOD = 3
-  BREAKOUT_PERCENTAGE = 1.02
+  SPIKE_PERCENTAGE = 10
+  OBSERVATION_PERIOD = 30
+  BREAKOUT_PERCENTAGE = 1.1
 
   def initialize(stock_csv, start_date: Date.parse("2010-01-01"))
     @stock_csv = stock_csv.select do |row|
@@ -17,6 +17,7 @@ class Darvas
     dates = []
     spike_indexes.each do |spike_index|
       max, min = get_box_boundaries(spike_index, OBSERVATION_PERIOD)
+      next if max.nil?
       date = monitor(BREAKOUT_PERCENTAGE, spike_index, max, min)
       dates << date if date
     end

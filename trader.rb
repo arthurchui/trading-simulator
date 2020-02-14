@@ -25,14 +25,21 @@ class Trader < Thor
 
   desc 'darvas', 'darvas'
   def darvas
-    FileUtils.mkdir_p('darvas') unless File.directory?('darvas')
+    FileUtils.rm_rf('darvas')
+    FileUtils.mkdir_p('darvas')
 
     puts "Darvas ..."
     Dir.glob("imported/*.csv").each do |file|
-      csv = CSV.read(file, headers: true)
-      dates = Darvas.new(csv).perform
-      filename = Pathname.new(file).basename.to_s
-      File.open("darvas/#{filename}", "w") { |file| file.write(dates.join("\n")) }
+      puts "Analyzing #{file}"
+      begin
+        csv = CSV.read(file, headers: true)
+        dates = Darvas.new(csv).perform
+        next if dates.empty?
+        filename = Pathname.new(file).basename.to_s
+        File.open("darvas/#{filename}", "w") { |file| file.write(dates.join("\n")) }
+      rescue => e
+        puts e
+      end
     end
   end
 end
