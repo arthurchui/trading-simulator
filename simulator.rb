@@ -51,7 +51,7 @@ class Simulator
   end
 
   def buy_dates
-    @buy_dates ||= CSV.read("darvas/#{stock_symbol}.csv", headers: true)
+    @buy_dates ||= CSV.read("darvas/#{stock_symbol}.csv")
   end
 
   def pricing_data
