@@ -6,6 +6,7 @@ require_relative 'importer'
 require './bulk_simulator'
 require './position'
 require './simulator'
+require './report'
 require "csv"
 require_relative "darvas"
 
@@ -44,6 +45,20 @@ class Trader < Thor
         puts e
       end
     end
+  end
+
+  desc 'simulate', 'simulate trades with the historical data'
+  option :stop_loss, type: :numeric, desc: 'expressed as a ratio (e.g. 0.9 -> sell at 90% the value)'
+  def simulate
+    puts 'Simulating ...'
+    stop_loss = options[:stop_loss] || 0.9
+    BulkSimulator.new(stop_loss).call
+  end
+
+  desc 'report', 'roll-up simulated transactions into total summaries'
+  def report
+    puts 'Generating ...'
+    Report.new.call
   end
 end
 
